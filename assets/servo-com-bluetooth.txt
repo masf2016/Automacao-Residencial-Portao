@@ -1,0 +1,100 @@
+#include 
+<Servo.h>
+#include <SoftwareSerial.h>
+
+
+Servo motor;
+ 		          //Criar um "objeto" do tipo Servo
+SoftwareSerial BTSerial (10, 11); //Criar um "objeto" do tipo SoftwareSerial e estabelece os pino 6 e 7 como RX e TX respectivamente 
+int caractere;
+String texto;
+
+void setup() 
+{ 
+ 
+	
+	BTSerial.begin(38400); //estabelece velocidade da comunicação serial do bluetooth em 38400 bps
+	Serial.begin(9600); //estabelece velocidade da comunicação serial em 9600 bps
+	motor.attach(3); //informa o uso do cabo no pino digital 3
+
+} 
+		
+
+
+void abrirPortao(){
+
+	int i;
+
+ 
+	 // laço que faz motor do portão realizar um giro de 180º  horario, abrindo
+
+	for(i=0;i<180;i++) {
+
+            
+	motor.write(i); 
+
+ 
+	delay(10); // atraso para evitar movimento rapido
+ 
+ 
+	}
+ 
+	
+	delay(1000);
+
+
+}
+void fecharPortao(){
+
+	int i;
+ 
+
+	 // laço que faz motor do portão realizar um giro de 180º antihorario, fechando
+
+	for(i=180;i>0;i--) {
+
+ 	
+	motor.write(i); 
+
+
+	delay(10); 
+ // atraso para evitar movimento rapido
+	
+	}
+ 
+	
+	delay(1000);
+}
+
+void loop() 
+{
+
+	if (bt.available()) { 		//verifica se esta disponivel a conexão bluetooh
+
+		caractere = BTSerial.read();	//lê o dado fornecido pelo bluetooth e põe na variavel
+
+		//avalia a ação do portão dependendo do dado enviado via bluetooth e em seguida põe uma string na variavel para resposta do lOg
+
+		if(caractere == '1') {
+ 
+ 
+ 			abrirPortao();
+			texto = " abriu o portão"
+		}
+		if (caractere == '0') {
+
+ 			fecharPortao();
+			texto = " fechou o portão"
+		}
+	}		
+			
+				// informa no log o dispositivo e se ele abriu ou fechou o portão
+
+			BTSerial.printl("AT+INQ"); // obter MAC, tipo de dispositivo e intensidade do sinal
+			Serial.println(texto);	   // texto se o portão foi aberto ou fechado pelo dispositivo
+			
+	delay(100);
+
+} 
+
+
